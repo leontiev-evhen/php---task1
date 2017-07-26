@@ -6,7 +6,6 @@
  * */
 function uploadFile ()
 {
-
     if (checkAccess())
     {
         if (move_uploaded_file($_FILES['file']['tmp_name'], PATH_UPLOAD.$_FILES['file']['name']))
@@ -18,12 +17,6 @@ function uploadFile ()
             return ['result' => false, 'message' => 'File was not uploaded'];
         }
     }
-    else
-    {
-        return ['result' => false, 'message' => 'Folder don\'t have access'];
-    }
-
-
 }
 
 /*
@@ -33,20 +26,23 @@ function uploadFile ()
  * */
 function getFiles ()
 {
-    $allFiles = array_slice(scandir(PATH_UPLOAD), 2);
-
-    $arrayFiles = [];
-    foreach ($allFiles as $key=>$file)
+    if (checkExistFile(null, 'Files does not exist'))
     {
-        if (checkExistFile($file))
+        $allFiles = array_slice(scandir(PATH_UPLOAD), 2);
+        $arrayFiles = [];
+        foreach ($allFiles as $key=>$file)
         {
-            $arrayFiles[$key]['name'] = $file;
-            $arrayFiles[$key]['size'] = formatBytes(filesize(PATH_UPLOAD . $file));
+            if (checkExistFile($file))
+            {
+                $arrayFiles[$key]['name'] = $file;
+                $arrayFiles[$key]['size'] = formatBytes(filesize(PATH_UPLOAD . $file));
+            }
+
         }
 
-    }
+        return $arrayFiles;
+    } 
 
-    return $arrayFiles;
 }
 
 /*
@@ -73,7 +69,7 @@ function deleteFile ($fileName)
  * return boolean
  *
  **/
-function checkExistFile ($fileName)
+function checkExistFile ($fileName = null, $error = 'File does not exist')
 {
 
     if (file_exists(PATH_UPLOAD.$fileName)) 
@@ -82,7 +78,7 @@ function checkExistFile ($fileName)
     }
     else 
     {
-        throw new Exception('File '.$fileName.' does not exist');
+        throw new Exception($error);
     }
 }
 
@@ -95,6 +91,7 @@ function checkAccess ()
 {
     if (ACCESS == substr(sprintf('%o', fileperms(PATH_UPLOAD)), -3))
     {
+
         return true;
     } 
     else 

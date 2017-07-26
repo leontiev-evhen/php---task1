@@ -48,7 +48,7 @@
                 </div>
             </div>
 
-        <?php   if (getFiles())
+        <?php   if (!empty($files))
                 { ?>
 
             <table class="table table-striped">
@@ -60,8 +60,8 @@
                 </tr>
             <?php
             $i = 1;
-    
-            foreach (getFiles() as $file)
+
+            foreach ($files as $file)
             { ?>
 
                     <tr>

@@ -4,45 +4,36 @@
     require_once 'libs/function.php';
     require_once 'helpers/function.php';
 
-    if (isset($_GET['action']))
+    try
     {
 
-        switch ($_GET['action'])
-        {
-            case 'upload':
+        $files = getFiles();
 
-                if (empty($_FILES['file']['error'])) 
-                {
-                    try
+        if (isset($_GET['action']))
+        {
+            switch ($_GET['action'])
+            {
+                case 'upload':
+                    if (empty($_FILES['file']['error']))
                     {
                         $_SESSION['message'] = showMessageHTML(uploadFile());
                         redirect();
-                    } 
-                    catch (Exception $e) 
-                    {
-                        $e->getMessage();
                     }
+                    break;
 
-                }
-                break;
-
-            case 'delete':
-                if (isset($_GET['file']))
-                {
-                    try
+                case 'delete':
+                    if (isset($_GET['file']))
                     {
                         $_SESSION['message'] = showMessageHTML(deleteFile($_GET['file']));
                         redirect();
-                    } 
-                    catch (Exception $e) 
-                    {
-                        $e->getMessage();
                     }
-                    
-                }
-                break;
+                    break;
+            }
         }
-
+    }
+    catch (Exception $e)
+    {
+        $_SESSION['message'] = showExceptionMessageHTML($e->getMessage());
     }
 
     $message = createMessage();
